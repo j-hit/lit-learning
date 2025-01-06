@@ -6,9 +6,17 @@ import {customElement} from 'lit/decorators.js';
 
 import {spread} from '@open-wc/lit-helpers';
 
+type ServerElement = {
+  element: string;
+  props: {
+    children?: string | ServerElement[];
+    [key: string]: string | boolean | ServerElement[] | undefined;
+  };
+};
+
 @customElement('my-server-content-renderer')
 export class MyServerContentRenderer extends LitElement {
-  private content = [
+  private content: ServerElement[] = [
     {
       element: 'my-button',
       props: {
@@ -45,17 +53,17 @@ export class MyServerContentRenderer extends LitElement {
     },
   ];
 
-  private renderContent(content: any): TemplateResult {
+  private renderContent(content: ServerElement): TemplateResult {
     const tag = content.element as keyof HTMLElementTagNameMap;
     const props = content.props;
-    const children: string | any[] = props.children || [];
+    const children = props.children || [];
     const propsWithoutChildren = {...content.props, children: undefined};
 
     return html`<${unsafeStatic(tag)} ${spread(propsWithoutChildren)}>
       ${
         typeof children === 'string'
           ? children
-          : children.map((child: any) => this.renderContent(child))
+          : children.map((child) => this.renderContent(child))
       }
     </${unsafeStatic(tag)}>`;
   }
