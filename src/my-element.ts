@@ -17,18 +17,20 @@ import {dateConverter} from './custom-converters/date-converter';
  */
 @customElement('my-element')
 export class MyElement extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      border: solid 1px gray;
-      padding: 16px;
-      max-width: 800px;
-    }
+  static override styles = [
+    css`
+      :host {
+        display: block;
+        border: solid 1px gray;
+        padding: 16px;
+        max-width: 800px;
+      }
 
-    :host([active]) {
-      border: 1px solid red;
-    }
-  `;
+      :host([active]) {
+        border: 1px solid red;
+      }
+    `,
+  ];
 
   /**
    * The name to say "Hello" to.

@@ -7,16 +7,22 @@
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../node_modules/lit/polyfill-support.js"></script>
     <script type="module" src="../my-element.js"></script>
+    <script type="module" src="../ui/button.js"></script>
+    <script type="module" src="../ui/header.js"></script>
     <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
+      * {
+        box-sizing: border-box;
+        font-family: 'Arial', 'Helvetica', sans-serif;
       }
     </style>
   </head>
   <body>
-    <my-element myvalue="10" my-name="lewis" date="05/12/22">
+    <!-- <my-element myvalue="10" my-name="lewis" date="05/12/22">
       <p>This is child content</p>
-    </my-element>
+    </my-element> -->
+    <my-header
+      heading="Digi - your digital assistant"
+      buttons='[{"size": "small", "shape": "rectangle", "variant": "secondary", "shadow": true, "text": "Button 1"}, {"size": "small", "shape": "rectangle", "variant": "secondary", "shadow": false, "text": "Button 2"}]'
+    ></my-header>
   </body>
 </html>
