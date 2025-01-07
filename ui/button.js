@@ -36,6 +36,7 @@ MyButton.styles = [
       :host {
         display: block;
         max-width: 90ch;
+        flex-shrink: 0;
 
         --my-button-background-color: orange;
         --my-button-color: white;

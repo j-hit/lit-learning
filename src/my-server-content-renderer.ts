@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {LitElement, TemplateResult} from 'lit';
+import {LitElement, TemplateResult, css} from 'lit';
 import {html, unsafeStatic} from 'lit/static-html.js';
 
 import {customElement} from 'lit/decorators.js';
@@ -10,12 +9,24 @@ type ServerElement = {
   element: string;
   props: {
     children?: string | ServerElement[];
-    [key: string]: string | boolean | ServerElement[] | undefined;
+    [key: string]: string | boolean | ServerElement[] | undefined | unknown;
   };
 };
 
 @customElement('my-server-content-renderer')
 export class MyServerContentRenderer extends LitElement {
+  static override styles = [
+    css`
+      :host {
+        display: grid;
+        gap: 16px;
+      }
+    `,
+  ];
+
+  /**
+   * Image this content coming from an API response
+   *  */
   private content: ServerElement[] = [
     {
       element: 'my-button',
@@ -23,7 +34,7 @@ export class MyServerContentRenderer extends LitElement {
         size: 'small',
         shape: 'rectangle',
         variant: 'secondary',
-        '.shadow': true,
+        '?shadow': true,
         children: [
           {
             element: 'span',
@@ -40,13 +51,36 @@ export class MyServerContentRenderer extends LitElement {
         size: 'small',
         shape: 'rectangle',
         variant: 'secondary',
-        '.shadow': false,
+        '?shadow': false,
         children: [
           {
             element: 'span',
             props: {
               children: 'Button 2',
             },
+          },
+        ],
+      },
+    },
+    {
+      element: 'my-header',
+      props: {
+        heading: 'Digi, your personal assistant',
+        logo: '🐔',
+        buttons: [
+          {
+            size: 'small',
+            shape: 'rectangle',
+            variant: 'secondary',
+            shadow: true,
+            text: 'My header button 1',
+          },
+          {
+            size: 'small',
+            shape: 'rectangle',
+            variant: 'secondary',
+            shadow: false,
+            text: 'My header button 2',
           },
         ],
       },
@@ -59,7 +93,19 @@ export class MyServerContentRenderer extends LitElement {
     const children = props.children || [];
     const propsWithoutChildren = {...content.props, children: undefined};
 
-    return html`<${unsafeStatic(tag)} ${spread(propsWithoutChildren)}>
+    const propsWithFlatStructure = Object.entries(propsWithoutChildren).reduce(
+      (acc, [key, value]) => {
+        if (typeof value === 'object') {
+          acc[key] = JSON.stringify(value);
+        } else {
+          acc[key] = value as string | undefined;
+        }
+        return acc;
+      },
+      {} as Record<string, string | undefined>
+    );
+
+    return html`<${unsafeStatic(tag)} ${spread(propsWithFlatStructure)}>
       ${
         typeof children === 'string'
           ? children
@@ -69,9 +115,7 @@ export class MyServerContentRenderer extends LitElement {
   }
 
   override render() {
-    return html`
-      <div>${this.content.map((item) => this.renderContent(item))}</div>
-    `;
+    return html`${this.content.map((item) => this.renderContent(item))}`;
   }
 }
 

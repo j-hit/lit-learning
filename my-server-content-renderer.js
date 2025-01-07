@@ -4,14 +4,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { LitElement } from 'lit';
+import { LitElement, css } from 'lit';
 import { html, unsafeStatic } from 'lit/static-html.js';
 import { customElement } from 'lit/decorators.js';
 import { spread } from '@open-wc/lit-helpers';
 let MyServerContentRenderer = class MyServerContentRenderer extends LitElement {
     constructor() {
         super(...arguments);
+        /**
+         * Image this content coming from an API response
+         *  */
         this.content = [
             {
                 element: 'my-button',
@@ -19,7 +21,7 @@ let MyServerContentRenderer = class MyServerContentRenderer extends LitElement {
                     size: 'small',
                     shape: 'rectangle',
                     variant: 'secondary',
-                    '.shadow': true,
+                    '?shadow': true,
                     children: [
                         {
                             element: 'span',
@@ -36,13 +38,36 @@ let MyServerContentRenderer = class MyServerContentRenderer extends LitElement {
                     size: 'small',
                     shape: 'rectangle',
                     variant: 'secondary',
-                    '.shadow': false,
+                    '?shadow': false,
                     children: [
                         {
                             element: 'span',
                             props: {
                                 children: 'Button 2',
                             },
+                        },
+                    ],
+                },
+            },
+            {
+                element: 'my-header',
+                props: {
+                    heading: 'Digi, your personal assistant',
+                    logo: '🐔',
+                    buttons: [
+                        {
+                            size: 'small',
+                            shape: 'rectangle',
+                            variant: 'secondary',
+                            shadow: true,
+                            text: 'My header button 1',
+                        },
+                        {
+                            size: 'small',
+                            shape: 'rectangle',
+                            variant: 'secondary',
+                            shadow: false,
+                            text: 'My header button 2',
                         },
                     ],
                 },
@@ -54,18 +79,33 @@ let MyServerContentRenderer = class MyServerContentRenderer extends LitElement {
         const props = content.props;
         const children = props.children || [];
         const propsWithoutChildren = { ...content.props, children: undefined };
-        return html `<${unsafeStatic(tag)} ${spread(propsWithoutChildren)}>
+        const propsWithFlatStructure = Object.entries(propsWithoutChildren).reduce((acc, [key, value]) => {
+            if (typeof value === 'object') {
+                acc[key] = JSON.stringify(value);
+            }
+            else {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+        return html `<${unsafeStatic(tag)} ${spread(propsWithFlatStructure)}>
       ${typeof children === 'string'
             ? children
             : children.map((child) => this.renderContent(child))}
     </${unsafeStatic(tag)}>`;
     }
     render() {
-        return html `
-      <div>${this.content.map((item) => this.renderContent(item))}</div>
-    `;
+        return html `${this.content.map((item) => this.renderContent(item))}`;
     }
 };
+MyServerContentRenderer.styles = [
+    css `
+      :host {
+        display: grid;
+        gap: 16px;
+      }
+    `,
+];
 MyServerContentRenderer = __decorate([
     customElement('my-server-content-renderer')
 ], MyServerContentRenderer);

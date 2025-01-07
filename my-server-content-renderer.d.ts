@@ -1,5 +1,9 @@
 import { LitElement, TemplateResult } from 'lit';
 export declare class MyServerContentRenderer extends LitElement {
+    static styles: import("lit").CSSResult[];
+    /**
+     * Image this content coming from an API response
+     *  */
     private content;
     private renderContent;
     render(): TemplateResult;
